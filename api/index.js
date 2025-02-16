@@ -28,8 +28,8 @@ app.get("/", (req, res) => {
 });
 
 
-router.use('/admin', userRoutes);
-router.use('/rideRequest', rideRequestRoutes);
+app.use('/admin', userRoutes);
+app.use('/rideRequest', rideRequestRoutes);
 // router.use("/driverRequest",driverRequestRoutes);
 // router.use('/templetes', templeteRoutes);
 
