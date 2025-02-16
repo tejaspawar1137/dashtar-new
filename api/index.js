@@ -1,30 +1,16 @@
-
-
-
 const express = require("express");
-const bcrypt = require('bcryptjs');
-
-const dotenv = require("dotenv");
-
-dotenv.config();
-
-// Initializing app
 const app = express();
+const PORT = process.env.PORT || 3000;
 
+// Middleware (optional)
+app.use(express.json());
 
+// Sample route
+app.get("/", (req, res) => {
+  res.send("Hello from Vercel!");
+});
 
-
-// Routes
-
-app.get("/", (req, res) => res.send("Express on Vercel"));
-
-
-
-
-
-
-// Starting server
-const PORT =  3001;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}!`);
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
