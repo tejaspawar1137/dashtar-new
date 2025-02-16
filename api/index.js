@@ -135,42 +135,8 @@ mongoose
 
 
 
-const driverSockets = {}; // Store driver connections { driverId: socket.id }
-const riderSockets = {};  // Store rider connections { riderId: socket.id }
 
-// Socket.IO connection handling
-io.on("connection", (socket) => {
-  console.log(`Client connected: ${socket.id}`);
 
-  // Joining rooms based on role
-  socket.on("joinRoom", ({ userId, role }) => {
-    const room = role === "driver" ? `driver_${userId}` : `rider_${userId}`;
-    socket.join(room);
-    console.log(`${socket.id} joined room: ${room}`);
-  });
-
-  // Receiving and broadcasting location updates
-  socket.on("locationUpdate", ({ userId, role, location }) => {
-    const room = role === "driver" ? `rider_${userId}` : `driver_${userId}`;
-    io.to(room).emit("locationUpdate", { userId, location });
-    
-    console.log(`Location update from ${role}:`, location);
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`Client disconnected: ${socket.id}`);
-  });
-});
-// Error handling middleware
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-  return res.status(statusCode).json({
-    success: false,
-    statusCode,
-    message,
-  });
-});
 
 // Starting server
 const PORT = process.env.PORT || 3001;
