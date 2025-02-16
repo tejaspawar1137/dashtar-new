@@ -1,76 +1,79 @@
 const express = require("express");
-const app = express();
-const dotenv = require("dotenv")
-const PORT = process.env.PORT || 5055;
+const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const http = require("http");
 const socketIo = require("socket.io");
+
+// Load environment variables
 dotenv.config();
-const requestController = require('../controllers/RideRequest');
-const templeteController = require('../controllers/Template')
-const {signUp, login, getDriverDetails, updateDetails, getDashboardDetails, getDrivers, getRiders} =  require('../controllers/User');
-const { createDriver } = require("../controllers/Driver");
-const router = express.Router()
 
-const server = http.createServer(app);
-
+const app = express();
 app.use(express.json());
+
+// Create HTTP Server for WebSockets
+const server = http.createServer(app);
 const io = socketIo(server, {
-  cors: {
-    origin: "*" // Update as needed for security
-  }
+  cors: { origin: "*" }, // Update as needed for security
 });
 
-
-
-// Export io for use in other files
+// Export `io` for use in other files
 module.exports = { io };
-// Sample route
+
+// Database Connection
+mongoose
+  .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ DB Connection Error:", err));
+
+// Import Controllers
+const requestController = require("../controllers/RideRequest");
+const templateController = require("../controllers/Template");
+const {
+  signUp, login, getDriverDetails, updateDetails, getDashboardDetails, getDrivers, getRiders
+} = require("../controllers/User");
+const { createDriver } = require("../controllers/Driver");
+
+// Set up API routes
+const router = express.Router();
+
+// 🌍 Base route
 app.get("/", (req, res) => {
   res.send("Hello from Vercel!");
 });
 
-// users routes 
-app.get("/api/users", (req, res) => {
-  res.send("Hello from Vercel!"); 
-});
-app.post('/api/admin/register', signUp);
-app.post('/api/admin/signin', login);
-app.get('/api/admin/getDriver', getDriverDetails);
-app.get("/api/admin/dashboard", getDashboardDetails)
-app.get("/api/admin/getDrivers", getDrivers);
-app.get("/api/admin/getRiders", getRiders)
-app.put('/api/admin/update', updateDetails);
+// 🧑 Users Routes
+router.post("/admin/register", signUp);
+router.post("/admin/signin", login);
+router.get("/admin/getDriver", getDriverDetails);
+router.get("/admin/dashboard", getDashboardDetails);
+router.get("/admin/getDrivers", getDrivers);
+router.get("/admin/getRiders", getRiders);
+router.put("/admin/update", updateDetails);
 
+// 🚗 Ride Requests Routes
+router.post("/rideRequest/createRequest", requestController.createRequest);
+router.put("/rideRequest/updateRequest", requestController.updateRequest);
+router.get("/rideRequest/getRideRequest", requestController.getRequest);
+router.get("/rideRequest/get", requestController.getUpdates);
+router.get("/rideRequest/getAllRides", requestController.getAllRides);
 
-// ride requests  routes
+// 🖼️ Template Route
+router.post("/templates/createTemplate", templateController.sendMediaMessage);
 
-app.post('/api/rideRequest/createRequest', requestController.createRequest);
-app.put('/api/rideRequest/updateRequest', requestController.updateRequest);
-app.get('/api/rideRequest/getRideRequest', requestController.getRequest);
-app.get('/api/rideRequest/get', requestController.getUpdates);
-app.get("/api/rideRequest/getAllRides",requestController.getAllRides);
+// 🚕 Driver Routes
+router.post("/driverRequest/create", createDriver);
+router.get("/driverRequest/get", getDrivers);
 
+// Use the router
+app.use("/api", router);
 
+// ✅ Export `app` for Vercel (Do NOT use `app.listen()` in Vercel)
+module.exports = app;
 
-// template route 
-
-router.post('/api/templetes/createTemplete', templeteController.sendMediaMessage);
-
-
-// driver route 
-
-app.post('/api/driverRequest/create', createDriver);
-app.get("/api/driverRequest/get", getDrivers)
-
-
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log("Connected to DB"))
-  .catch((err) => console.error("DB Connection Error:", err));
-
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// 🚀 For local development, start the server
+if (require.main === module) {
+  const PORT = process.env.PORT || 5055;
+  server.listen(PORT, () => {
+    console.log(`✅ Server is running on port ${PORT}`);
+  });
+}
