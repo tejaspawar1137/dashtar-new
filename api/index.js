@@ -42,6 +42,7 @@ app.get("/", (req, res) => {
 });
 
 // 🧑 Users Routes
+router.get("/admin/dummy", (req, res) => res.send("server worked!"));
 router.post("/admin/register", signUp);
 router.post("/admin/signin", login);
 router.get("/admin/getDriver", getDriverDetails);
