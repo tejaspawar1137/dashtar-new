@@ -9,7 +9,8 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-cors({ origin: "*", credentials: true })
+app.use(cors({ origin: "*", credentials: true }))
+
 // Create HTTP Server for WebSockets
 const server = http.createServer(app);
 const io = socketIo(server, {
