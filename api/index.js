@@ -9,16 +9,11 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-const allowedOrigins = [
-  "https://dashtar-ui.vercel.app/", // ✅ Your deployed frontend URL
-  "http://localhost:4100", // ✅ Allow local development
-];
-
 app.use(
   cors({
-    origin: allowedOrigins,
-    methods: "GET, POST, PUT, DELETE",
-    credentials: true, // ✅ Required if using authentication (cookies, JWT, etc.)
+    origin: ["https://dashtar-ui.vercel.app"], // Allow only your frontend
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // Allow cookies if needed
   })
 );
 
