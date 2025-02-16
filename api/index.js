@@ -9,7 +9,18 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: "*", credentials: true }))
+const allowedOrigins = [
+  "https://dashtar-ui.vercel.app/", // ✅ Your deployed frontend URL
+  "http://localhost:4100", // ✅ Allow local development
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: "GET, POST, PUT, DELETE",
+    credentials: true, // ✅ Required if using authentication (cookies, JWT, etc.)
+  })
+);
 
 // Create HTTP Server for WebSockets
 const server = http.createServer(app);
