@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { genSalt, hash, compare } = require("bcrypt");
+const { genSalt, hash, compare } = require("bcryptjs");
 
 const phoneRegex = /^[+91]?\d{10}$/;
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

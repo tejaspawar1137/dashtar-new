@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const bcryptjs = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const { validationResult } = require("express-validator");
 const Rider = require("../models/Rider");
 const Driver = require("../models/Driver");
