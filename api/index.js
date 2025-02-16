@@ -3,13 +3,13 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const http = require("http");
 const socketIo = require("socket.io");
-
+const cors = require("cors")
 // Load environment variables
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-
+cors({ origin: "*", credentials: true })
 // Create HTTP Server for WebSockets
 const server = http.createServer(app);
 const io = socketIo(server, {
