@@ -9,13 +9,29 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+
+
+// ✅ Allow localhost & live frontend
+const allowedOrigins = [
+  "https://dashtar-ui.vercel.app",
+  "http://localhost:4100",
+];
+
 app.use(
   cors({
-    origin: ["https://dashtar-ui.vercel.app"], // Allow only your frontend
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // Allow cookies if needed
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Important for authentication (cookies, tokens)
   })
 );
+
 
 // Create HTTP Server for WebSockets
 const server = http.createServer(app);
