@@ -13,7 +13,7 @@ app.use(express.json());
 
 // ✅ Allow localhost & live frontend
 const allowedOrigins = [
-  "https://dashtar-ui.vercel.app",
+  "https://dashtars.vercel.app",
   "http://localhost:4100",
 ];
 
