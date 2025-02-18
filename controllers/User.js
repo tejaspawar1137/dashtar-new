@@ -226,14 +226,23 @@ const getDashboardDetails = async (req, res, next) => {
       },
     ]);
 
-const driverDetails = await Driver.find({}, 'fullName transactionId status salary vehicleDetails contactNumber createdAt') // Removed '_id' from projection
-  .lean(); // Ensure we get plain JavaScript objects
+// Driver's Details (all drivers info)
+const driverDetails = await Driver.aggregate([
+  {
+    $project: {
+      _id: 0, // Exclude MongoDB default _id
+      userId: "$_id", // Rename _id to userId explicitly
+      name: "$fullName",
+      transactionId: { $ifNull: ["$transactionId", "$_id"] },
+      status: "$status",
+      salary: "$salary",
+      contactNumber: "$contactNumber",
+      createdAt: "$createdAt",
+      vehicleDetails: "$vehicleDetails"
+    }
+  }
+]);
 
-// Now, use map on the plain JavaScript array
-const driverDetailsWithUserId = driverDetails.map(driver => ({
-  ...driver,
-  userId: driver._id, // Add userId field explicitly
-}));
 // Respond with all aggregated data
 res.json({
   liveLocations,
@@ -244,8 +253,9 @@ res.json({
   totalRevenue,
   ongoingTrips,
   salaryStatus,
-  driverDetails: driverDetailsWithUserId, // Return modified driver details
+  driverDetails, // Now includes userId
 });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error retrieving dashboard data" });
