@@ -226,16 +226,14 @@ const getDashboardDetails = async (req, res, next) => {
       },
     ]);
 
-    // Driver's Details (all drivers info)
- const driverDetails = await Driver.find({}, '_id fullName transactionId status salary vehicleDetails contactNumber createdAt')
+const driverDetails = await Driver.find({}, 'fullName transactionId status salary vehicleDetails contactNumber createdAt') // Removed '_id' from projection
   .lean(); // Ensure we get plain JavaScript objects
 
 // Now, use map on the plain JavaScript array
 const driverDetailsWithUserId = driverDetails.map(driver => ({
   ...driver,
-  userId: driver._id, // Add userId field based on _id
+  userId: driver._id, // Add userId field explicitly
 }));
-
 // Respond with all aggregated data
 res.json({
   liveLocations,
