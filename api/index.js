@@ -54,7 +54,7 @@ const templateController = require("../controllers/Template");
 const {
   signUp, login, getDriverDetails, updateDetails, getDashboardDetails, getDrivers, getRiders
 } = require("../controllers/User");
-const { createDriver } = require("../controllers/Driver");
+const { createDriver, updateDriver, deleteDriver } = require("../controllers/Driver");
 
 // Set up API routes
 const router = express.Router();
@@ -73,7 +73,8 @@ router.get("/admin/dashboard", getDashboardDetails);
 router.get("/admin/getDrivers", getDrivers);
 router.get("/admin/getRiders", getRiders);
 router.put("/admin/update", updateDetails);
-
+router.put("/admin/updateDriver/:id", updateDriver)
+router.delete("/admin/deleteDriver/:id", deleteDriver)
 // 🚗 Ride Requests Routes
 router.post("/rideRequest/createRequest", requestController.createRequest);
 router.put("/rideRequest/updateRequest", requestController.updateRequest);

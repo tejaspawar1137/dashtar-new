@@ -1,5 +1,5 @@
 const Driver = require('../models/Driver');
-
+const mongoose = require("mongoose")
 // Controller to create a new driver
 const createDriver = async (req, res, next) => {
   try {
@@ -39,4 +39,42 @@ const getDrivers = async (req, res, next) => {
   }
 };
 
-module.exports = { createDriver, getDrivers };
+
+const updateDriver = async (req, res, next) => {
+   try {
+    const {id} = req.params;
+    
+     if(!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({message: "Invalid driver Id"})
+     }
+  
+  const updateDriver = await Driver.findByIdAndUpdate(id, req.body, {new: true, runValidators: true}); 
+  console.log(updateDriver)
+
+  res.status(200).json({
+    success: true,
+    message: "Driver fetch successfully",
+    data: updateDriver
+  })
+   }catch(error) {
+     next(error)
+   }
+}
+
+const deleteDriver = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const deleteDriver = await Driver.findByIdAndDelete(id);
+    if(!deleteDriver) {
+      return res.status(404).json({message: "Driver not found"})
+    };
+    res.status(200).json({
+      success: true, 
+      message: "Driver delete successfully",
+      data: deleteDriver
+    })
+  } catch(error) {
+    next(error)
+  }
+}
+module.exports = { createDriver, getDrivers, updateDriver, deleteDriver };
