@@ -227,27 +227,27 @@ const getDashboardDetails = async (req, res, next) => {
     ]);
 
     // Driver's Details (all drivers info)
-    const driverDetails = await Driver.find(
-      {},
-      "_id fullName transactionId status salary vehicleDetails contactNumber createdAt"
-    )
-      .lean() // Make sure you get plain JavaScript objects
-      .map((driver) => ({
-        ...driver,
-        userId: driver._id, // Add userId field based on _id
-      }));
-    // Respond with all aggregated data
-    res.json({
-      liveLocations,
-      finishedTrips,
-      newUsers,
-      totalEarnings,
-      cancelledTrips,
-      totalRevenue,
-      ongoingTrips,
-      salaryStatus,
-      driverDetails,
-    });
+ const driverDetails = await Driver.find({}, '_id fullName transactionId status salary vehicleDetails contactNumber createdAt')
+  .lean(); // Ensure we get plain JavaScript objects
+
+// Now, use map on the plain JavaScript array
+const driverDetailsWithUserId = driverDetails.map(driver => ({
+  ...driver,
+  userId: driver._id, // Add userId field based on _id
+}));
+
+// Respond with all aggregated data
+res.json({
+  liveLocations,
+  finishedTrips,
+  newUsers,
+  totalEarnings,
+  cancelledTrips,
+  totalRevenue,
+  ongoingTrips,
+  salaryStatus,
+  driverDetails: driverDetailsWithUserId, // Return modified driver details
+});
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error retrieving dashboard data" });
