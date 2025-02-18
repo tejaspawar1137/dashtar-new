@@ -163,7 +163,6 @@ const updateDetails = async (req, res, next) => {
 
 
 const getDashboardDetails = async (req, res, next) => {
-  
   try {
     // Taxi Live Location (driver's current GPS coordinates)
     const liveLocations = await Driver.find({}, 'name location'); 
@@ -196,19 +195,21 @@ const getDashboardDetails = async (req, res, next) => {
     const ongoingTrips = await RideRequest.countDocuments({ status: 'ongoing' });
 
     // Salary Status (example aggregation by driver status)
-   const salaryStatus = await Driver.aggregate([
-  {
-    $project: {
-      _id: 0,
-      name: "$fullName",
-      transactionId: { $ifNull: ["$transactionId", "$_id"] },
-      amount: "$salary",
-      status: "$status"
-    }
-  }
-]);
+    const salaryStatus = await Driver.aggregate([
+      {
+        $project: {
+          _id: 0,
+          userId: "$_id", // Include the userId from the _id field
+          name: "$fullName",
+          transactionId: { $ifNull: ["$transactionId", "$_id"] }, // Use transactionId if available, else fallback to _id
+          amount: "$salary",
+          status: "$status"
+        }
+      }
+    ]);
+
     // Driver's Details (all drivers info)
-    const driverDetails = await Driver.find({});
+    const driverDetails = await Driver.find({}, '_id fullName transactionId status salary vehicleDetails');
 
     // Respond with all aggregated data
     res.json({
@@ -217,7 +218,7 @@ const getDashboardDetails = async (req, res, next) => {
       newUsers,
       totalEarnings,
       cancelledTrips,
-  totalRevenue,
+      totalRevenue,
       ongoingTrips,
       salaryStatus,
       driverDetails
@@ -226,8 +227,8 @@ const getDashboardDetails = async (req, res, next) => {
     console.error(error);
     res.status(500).json({ error: 'Error retrieving dashboard data' });
   }
+};
 
-}
 
 
 const getRiders = async (req, res, next) => {
